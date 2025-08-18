@@ -1,0 +1,17 @@
+<header id="main-header" class="sticky top-0 left-0 z-50 transition-all duration-300 w-full flex items-center justify-between gap-4 p-4">
+	<a href="/" class="flex item-center gap-1">
+		<img src="/assets/images/logo.png" alt="logo" class="h-8 w-8 object-cover drop-shadow-md" />
+		<h1 class="text-2xl font-bold tracking-tight text-center text-black dark:text-white">
+			Downly
+		</h1>
+	</a>
+	<div class="flex item-center gap-6">
+		<div class="flex items-center gap-2">
+			<%- include('dark-button') %>
+			<a href="/login" class="flex items-center gap-2 whitespace-nowrap bg-blue-500 px-1.5 md:px-3 py-2 rounded md:rounded-full text-white text-sm font-semibold hover:shadow-lg hover:scale-105 hover:duration-300 hover:transition-all">
+				<span class="hidden md:flex">Sign In</span>
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"><path d="M12 20a8 8 0 1 0 0-16"/><path stroke-linejoin="round" d="M4 12h10m0 0l-3-3m3 3l-3 3"/></g></svg>
+			</a>
+		</div>
+	</div>
+</header>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Setting</title>
+  <%- include('../partials/head') %>
+</head>
+<body class="flex w-full min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-sky-50/50 text-neutral-700 dark:text-neutral-100 dark:from-neutral-900 dark:via-gray-900 dark:to-slate-900">
+	<aside id="sidebar" class="flex-none fixed md:static top-0 left-0 overflow-y-auto h-screen w-64 bg-white border-r border-neutral-100 dark:border-neutral-700/50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 dark:bg-slate-800">
+		<%- include('../components/sidebar-admin') %>
+	</aside>
+	<main class="flex flex-col h-screen w-full overflow-y-auto">
+		<%- include('../components/header-admin', { title: 'Setting' }) %>
+		<div class="-z-10 fixed top-0 h-[100vh] inset-0 bg-[linear-gradient(to_right,#94a3b82e_1px,transparent_1px),linear-gradient(to_bottom,#94a3b82e_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#4755692e_1px,transparent_1px),linear-gradient(to_bottom,#4755692e_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+		<section class="p-4">
+			<div class="p-4 bg-white dark:bg-slate-800 rounded-md shadow-sm object-cover">
+				<div class="flex flex-col items-center justify-center md:px-6">
+					<div class="flex flex-col items-center">
+						<img src="/assets/images/user.png" alt="user" class="h-24 w-24 rounded-full object-cover drop-shadow-lg">
+						<h1 class="text-3xl font-bold tracking-tight text-black dark:text-white mt-4">
+							<%= user.name %>
+						</h1>
+						<span class="text-xs bg-blue-500 dark:bg-blue-600 text-white font-semibold px-3 py-1 rounded-full shadow-md">
+							<%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %>
+						</span>
+					</div>
+					<div class="grid grid-cols-3 md:grid-cols-6 mt-9 mb-12">
+						<% if (subscriptions.length === 0) { %>
+						  <p class="text-gray-500 mt-2 text-center text-rose-500">There are no active subscriptions yet</p>
+						<% } else { %>
+						<% subscriptions.forEach(sub => { %>
+							<div class="flex flex-col gap-2">
+								<span class="text-center border-b pb-2 px-4 font-semibold text-black dark:text-white">
+									Package
+								</span>
+								<span class="text-center px-4">
+									<%= sub.package_name %>
+								</span>
+							</div>
+							<div class="flex flex-col gap-2">
+								<span class="text-center border-b pb-2 px-4 font-semibold text-black dark:text-white">
+									Price
+								</span>
+								<span class="text-center px-4">
+									<% if (parseFloat(sub.price) === 0) { %>
+										Free
+									<% } else { %>
+										<%= parseInt(sub.price).toLocaleString('id-ID') %>
+									<% } %>
+								</span>
+							</div>
+							<div class="flex flex-col gap-2">
+								<span class="text-center border-b pb-2 px-4 font-semibold text-black dark:text-white">
+									Quota
+								</span>
+								<span class="text-center px-4">
+									<% if (sub.quote === null || sub.quote === -1) { %>
+										Unlimited
+									<% } else { %>
+										<%= sub.quote %>
+									<% } %>
+								</span>
+							</div>
+							<div class="flex flex-col gap-2 mt-4 md:mt-0">
+								<span class="text-center border-b pb-2 px-4 font-semibold text-black dark:text-white">
+									Duration
+								</span>
+								<span class="text-center px-4">
+								<% if (sub.duration === null || sub.duration === -1) { %>
+									Lifetime
+								<% } else { %>
+									<%= sub.duration %> Days
+								<% } %>
+								</span>
+							</div>
+							<div class="flex flex-col gap-2 mt-4 md:mt-0">
+								<span class="text-center border-b pb-2 px-4 font-semibold text-black dark:text-white">
+									Subscribed
+								</span>
+								<span class="text-center px-4"><%= new Date(sub.create_at).toLocaleDateString('id-ID') %></span>
+							</div>
+							<div class="flex flex-col gap-2 mt-4 md:mt-0">
+								<span class="text-center border-b pb-2 px-4 font-semibold text-black dark:text-white">
+									Expired
+								</span>
+								<span class="text-center px-4"><%= sub.expired_at === null ? '-' : new Date(sub.expired_at).toLocaleDateString('id-ID') %></span>
+							</div>
+						<% }) %>
+						<% } %>
+					</div>
+				</div>
+				
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+					<form action="/dashboard/setting/update" method="POST">
+						<h2 class="text-xl font-semibold tracking-tight">
+							General Information
+						</h2>
+						<div class="flex flex-col gap-1 mt-6">
+							<label class="text-sm">
+								Full Name
+							</label>
+							<input name="name" type="text" value="<%= user.name %>" required class="w-full max-w-md p-3 rounded bg-neutral-50 dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 focus:outline-none">
+						</div>
+						<div class="flex flex-col gap-1 mt-4">
+							<label class="text-sm">
+								Email
+							</label>
+							<input type="email" value="<%= user.email %>" required readonly class="w-full max-w-md p-3 rounded bg-neutral-100 cursor-not-allowed dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 focus:outline-none">
+						</div>
+						<div class="flex flex-col gap-1 mt-4">
+							<label class="text-sm">
+								Roles
+							</label>
+							<input type="text" value="<%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %>" required readonly class="w-full max-w-md p-3 cursor-not-allowed rounded bg-neutral-100 dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 focus:outline-none">
+						</div>
+						<div class="flex flex-col gap-1 mt-4">
+							<label class="text-sm">
+								Join On
+							</label>
+							<input type="text" value="<%= new Date(user.created_at).getDate().toString().padStart(2, '0') %>/<%= (new Date(user.created_at).getMonth() + 1).toString().padStart(2, '0') %>/<%= new Date(user.created_at).getFullYear() %>" required readonly class="w-full max-w-md p-3 rounded bg-neutral-100 dark:bg-slate-900 cursor-not-allowed border border-neutral-200 dark:border-slate-700 focus:outline-none">
+						</div>
+						<div class="flex mt-6">
+							<button type="submit" class="flex items-center gap-2 p-3 rounded bg-blue-500 text-white font-semibold">
+								Save
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.464 20.536C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12c0-.341 0-.512-.015-.686a4.04 4.04 0 0 0-.921-2.224a8 8 0 0 0-.483-.504l-5.167-5.167a9 9 0 0 0-.504-.483a4.04 4.04 0 0 0-2.224-.92C12.512 2 12.342 2 12 2C7.286 2 4.929 2 3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535Z"/><path d="M17 22v-1c0-1.886 0-2.828-.586-3.414S14.886 17 13 17h-2c-1.886 0-2.828 0-3.414.586S7 19.114 7 21v1"/><path stroke-linecap="round" d="M7 8h6"/></g></svg>
+							</button>
+						</div>
+					</form>
+					<form action="/dashboard/setting/cahnge-password" method="POST" class="mt-9 md:mt-0">
+						<h2 class="text-xl font-semibold tracking-tight">
+							Change Password
+						</h2>
+						<div class="flex flex-col gap-1 mt-6">
+							<label class="text-sm">
+								Password
+							</label>
+							<input name="password" type="password" placeholder="*******" required class="w-full max-w-md p-3 rounded bg-neutral-50 dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 focus:outline-none">
+						</div>
+						<div class="flex flex-col gap-1 mt-4">
+							<label class="text-sm">
+								Confirm Password
+							</label>
+							<input name="re-password" type="password" placeholder="*******" required class="w-full max-w-md p-3 rounded bg-neutral-50 dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 focus:outline-none">
+						</div>
+						<div class="flex mt-6">
+							<button type="submit" class="flex items-center gap-2 p-3 rounded bg-blue-500 text-white font-semibold">
+								Change
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.464 20.536C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12c0-.341 0-.512-.015-.686a4.04 4.04 0 0 0-.921-2.224a8 8 0 0 0-.483-.504l-5.167-5.167a9 9 0 0 0-.504-.483a4.04 4.04 0 0 0-2.224-.92C12.512 2 12.342 2 12 2C7.286 2 4.929 2 3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535Z"/><path d="M17 22v-1c0-1.886 0-2.828-.586-3.414S14.886 17 13 17h-2c-1.886 0-2.828 0-3.414.586S7 19.114 7 21v1"/><path stroke-linecap="round" d="M7 8h6"/></g></svg>
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</section>
+	</main>
+	
+	<%- include('../components/error-modal') %>
+	<script src="/assets/js/dashboard.js"></script>
+</body>
+</html>

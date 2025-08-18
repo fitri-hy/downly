@@ -1,0 +1,67 @@
+<% subscriptions.forEach(sub => { 
+    let usedPercentage = 0;
+    let barColor = 'bg-emerald-500';
+    let displayText = '';
+
+    if (sub.package_id == 6 || sub.total_package_quote == -1) {
+      usedPercentage = 100;
+      displayText = `
+        <div class="w-full flex items-center justify-between">
+          <div>
+            <span class="font-semibold">${sub.package_name}</span>
+            <span class="ml-2 text-emerald-500 font-bold">Unlimited</span>
+          </div>
+          <div class="text-emerald-500 font-semibold">Lifetime</div>
+        </div>`;
+    } else {
+      usedPercentage = sub.total_package_quote > 0 
+        ? ((sub.total_package_quote - sub.remaining_quote) / sub.total_package_quote * 100) 
+        : 0;
+
+      let expiredText = sub.expired_at
+        ? new Date(sub.expired_at).toLocaleDateString('id-ID', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: false
+          })
+        : 'Lifetime';
+
+      displayText = `
+        <div class="w-full flex items-center justify-between">
+          <div>
+            <span class="font-semibold">${sub.package_name}</span>
+            ${sub.remaining_quote}/${sub.total_package_quote}
+            (${Math.round(usedPercentage)}%)
+            <a href="/pticing" class="text-sky-500 font-bold hover:underline">Upgrade</a>
+          </div>
+          <div class="text-rose-500 font-semibold">
+            ${expiredText}
+          </div>
+        </div>`;
+
+      if (usedPercentage >= 70 && usedPercentage < 90) {
+        barColor = 'bg-amber-500';
+      } else if (usedPercentage >= 90) {
+        barColor = 'bg-rose-500';
+      }
+    }
+%>
+<div class="flex w-full md:max-w-sm px-4 text-xs md:text-normal">
+  <div class="flex flex-col w-full gap-1 bg-white dark:bg-slate-800 px-4 py-2 rounded-t-md border-t border-l border-r border-neutral-100 dark:border-slate-700/50">
+    <div class="flex items-center gap-2 text-black dark:text-white justify-between">
+      <div class="w-full flex items-center gap-1">
+        <%- displayText %>
+      </div>
+    </div>
+    <div class="w-full bg-gray-200 dark:bg-gray-700 rounded h-4 relative mt-1">
+      <div 
+        class="<%= barColor %> h-full rounded text-white flex items-center justify-center font-semibold" 
+        style="width: <%= usedPercentage %>%;">
+      </div>
+    </div>
+  </div>
+</div>
+<% }) %>

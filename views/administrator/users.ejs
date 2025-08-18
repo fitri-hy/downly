@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Users - Downly</title>
+  <%- include('../partials/head') %>
+</head>
+<body class="flex w-full min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-sky-50/50 text-neutral-700 dark:text-neutral-100 dark:from-neutral-900 dark:via-gray-900 dark:to-slate-900">
+	<aside id="sidebar" class="flex-none fixed md:static top-0 left-0 overflow-y-auto h-screen w-64 bg-white border-r border-neutral-100 dark:border-neutral-700/50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 dark:bg-slate-800">
+		<%- include('../components/sidebar-administrator') %>
+	</aside>
+	<main class="flex flex-col h-screen w-full overflow-y-auto">
+		<%- include('../components/header-admin', { title: 'Users Download' }) %>
+		<section class="p-4">
+			<div class="p-4 bg-white dark:bg-slate-800 rounded-md shadow-sm border border-neutral-100 dark:border-slate-700/50">
+				<div class="prose prose-sm md:prose-base dark:prose-invert max-w-none mt-12">
+					<div class="overflow-auto w-full">
+						<table>
+							<thead>
+								<tr>
+									<th class="whitespace-nowrap">Name</th>
+									<th class="whitespace-nowrap">Email</th>
+									<th class="whitespace-nowrap">Role</th>
+									<th class="whitespace-nowrap">Status</th>
+									<th class="whitespace-nowrap">Package</th>
+									<th class="whitespace-nowrap">Quote</th>
+									<th class="whitespace-nowrap">Start/Expired</th>
+									<th class="whitespace-nowrap">Created At</th>
+									<th class="text-center whitespace-nowrap">Action</th>
+								</tr>
+							</thead>
+							<tbody id="downloads-list">
+								<% if (users.length === 0) { %>
+								  <tr>
+									<td colspan="9" class="text-center text-gray-500 py-4">
+									  No users found.
+									</td>
+								  </tr>
+								<% } else { %>
+								<% users.forEach(u => { %>
+									<tr>
+									  <td class="whitespace-nowrap">
+										<%= u.name %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<%= u.email %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<%= u.role.charAt(0).toUpperCase() + u.role.slice(1) %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<%= u.status %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<% if (u.package_name) { %>
+										  <%= u.package_name %>
+										<% } else { %>
+										  -
+										<% } %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<%= u.subscribe_quote || 'Unlimited' %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<% if (u.subscribe_created_at) { %>
+										  <%= new Date(u.subscribe_created_at).toLocaleDateString() %> / 
+										  <%= u.subscribe_expired_at ? new Date(u.subscribe_expired_at).toLocaleDateString() : 'Lifetime' %>
+										<% } else { %>
+										  -
+										<% } %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<%= new Date(u.created_at).toLocaleString() %>
+									  </td>
+									  <td class="whitespace-nowrap">
+										<div class="flex items-center justify-center gap-2">
+										  <button 
+											data-id="<%= u.id %>" 
+											data-name="<%= u.name %>"
+											data-email="<%= u.email %>"
+											data-role="<%= u.role %>"
+											data-status="<%= u.status %>"
+											data-package="<%= u.package_name || '-' %>"
+											data-subscribe-quote="<%= u.subscribe_quote || '-' %>"
+											data-subscribe-start="<%= u.subscribe_created_at ? new Date(u.subscribe_created_at).toISOString() : '' %>"
+											data-subscribe-expired="<%= u.subscribe_expired_at ? new Date(u.subscribe_expired_at).toISOString() : 'Lifetime' %>"
+										    class="open-edit-modal text-amber-500 p-1 hover:bg-gray-100 dark:hover:bg-slate-900 rounded-full">
+										    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"><path fill="currentColor" d="m11.4 18.161l7.396-7.396a10.3 10.3 0 0 1-3.326-2.234a10.3 10.3 0 0 1-2.235-3.327L5.839 12.6c-.577.577-.866.866-1.114 1.184a6.6 6.6 0 0 0-.749 1.211c-.173.364-.302.752-.56 1.526l-1.362 4.083a1.06 1.06 0 0 0 1.342 1.342l4.083-1.362c.775-.258 1.162-.387 1.526-.56q.647-.308 1.211-.749c.318-.248.607-.537 1.184-1.114m9.448-9.448a3.932 3.932 0 0 0-5.561-5.561l-.887.887l.038.111a8.75 8.75 0 0 0 2.092 3.32a8.75 8.75 0 0 0 3.431 2.13z"/></svg>
+										  </button>
+										  <form action="/administrator/users/delete/<%= u.id %>" method="POST" class="-mb-1">
+											<button type="submit" class="text-rose-500">
+											  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M9.17 4a3.001 3.001 0 0 1 5.66 0m5.67 2h-17m15.333 2.5l-.46 6.9c-.177 2.654-.265 3.981-1.13 4.79s-2.196.81-4.856.81h-.774c-2.66 0-3.991 0-4.856-.81c-.865-.809-.954-2.136-1.13-4.79l-.46-6.9M9.5 11l.5 5m4.5-5l-.5 5"/></svg>
+											</button>
+										  </form>
+										</div>
+									  </td>
+									</tr>
+								  <% }) %>
+								<% } %>
+							  </tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	
+	<div id="editModal" class="fixed flex flex-col inset-0 bg-black/50 z-50 hidden p-4 overflow-auto">
+	  <div class="bg-white dark:bg-slate-800 rounded-md w-full max-w-md shadow-lg p-4 md:p-6 relative max-h-[95vh] mx-auto overflow-y-auto">
+		<h2 class="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Edit User</h2>
+		<form id="editUserForm" method="POST" action="/administrator/users/update">
+		  <input type="hidden" name="id" id="edit-user-id" required>
+
+		  <div class="mb-4">
+			<label for="edit-name" class="block text-sm font-medium mb-1">Full Name</label>
+			<input type="text" id="edit-name" name="name" maxlength="25" pattern="^[a-zA-Z\s]+$" required
+			  class="w-full p-3 rounded bg-neutral-50 dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 focus:outline-none">
+		  </div>
+
+		  <div class="mb-4">
+			<label for="edit-email" class="block text-sm font-medium mb-1">Email</label>
+			<input id="edit-email" readonly required
+			  class="w-full p-3 rounded bg-neutral-100 cursor-not-allowed dark:bg-slate-900 border border-neutral-200 dark:border-slate-700 focus:outline-none">
+		  </div>
+
+		  <div class="mb-2">
+			<label for="edit-package" class="block text-sm font-medium mb-1">Package</label>
+			<select id="edit-package" name="package_id" required
+			  class="w-full p-3 rounded bg-neutral-50 dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 focus:outline-none">
+			  <% packages.forEach(pkg => { %>
+				<option value="<%= pkg.id %>"><%= pkg.name %> (<%= pkg.duration === -1 ? 'Lifetime' : pkg.duration + ' days' %>)</option>
+			  <% }); %>
+			</select>
+		  </div>
+
+		  <div class="mb-4">
+			<label for="edit-role" class="block text-sm font-medium mb-1">Role</label>
+			<select id="edit-role" name="role" required
+			  class="w-full p-3 rounded bg-neutral-50 dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 focus:outline-none">
+			  <option value="superadmin">Superadmin</option>
+			  <option value="admin">Admin</option>
+			  <option value="user">User</option>
+			</select>
+		  </div>
+
+		  <div class="mb-4">
+			<label for="edit-status" class="block text-sm font-medium mb-1">Status</label>
+			<select id="edit-status" name="status" required
+			  class="w-full p-3 rounded bg-neutral-50 dark:bg-slate-700 border border-neutral-200 dark:border-slate-600 focus:outline-none">
+			  <option value="Active">Active</option>
+			  <option value="Inactive">Inactive</option>
+			</select>
+		  </div>
+
+		  <div class="flex justify-end gap-2">
+			<button type="button" id="closeEditModal"
+			  class="flex items-center gap-2 font-semibold px-2 py-2 md:px-4 rounded-md bg-rose-500 dark:bg-rose-600 text-white hover:bg-rose-600 dark:hover:bg-rose-500 hover:duration-300 transition-all">
+			  Cancel
+			</button>
+			<button type="submit"
+			  class="flex items-center gap-2 font-semibold px-2 py-2 md:px-4 rounded-md bg-sky-500 dark:bg-sky-600 text-white hover:bg-sky-600 dark:hover:bg-sky-500 hover:duration-300 transition-all">
+			  Save
+			</button>
+		  </div>
+		</form>
+	  </div>
+	</div>
+
+	
+	<%- include('../components/error-modal') %>
+	<script src="/assets/js/dashboard.js"></script>
+	<script>
+	document.querySelectorAll('.open-edit-modal').forEach(button => {
+	  button.addEventListener('click', function () {
+		const dataset = this.dataset;
+		document.getElementById('edit-user-id').value = dataset.id;
+		document.getElementById('edit-name').value = dataset.name;
+		document.getElementById('edit-email').value = dataset.email;
+		document.getElementById('edit-role').value = dataset.role;
+		document.getElementById('edit-status').value = dataset.status;
+
+		const packageSelect = document.getElementById('edit-package');
+		const packageValue = dataset.package;
+		for (let i = 0; i < packageSelect.options.length; i++) {
+		  if (packageSelect.options[i].text.includes(packageValue)) {
+			packageSelect.selectedIndex = i;
+			break;
+		  }
+		}
+
+		document.getElementById('editModal').classList.remove('hidden');
+	  });
+	});
+
+	document.getElementById('closeEditModal').addEventListener('click', () => {
+	  document.getElementById('editModal').classList.add('hidden');
+	});
+	</script>
+</body>
+</body>
+</html>

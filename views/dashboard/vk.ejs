@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>VKontakte</title>
+  <%- include('../partials/head') %>
+</head>
+<body class="flex w-full min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-sky-50/50 text-neutral-700 dark:text-neutral-100 dark:from-neutral-900 dark:via-gray-900 dark:to-slate-900">
+	<aside id="sidebar" class="flex-none fixed md:static top-0 left-0 overflow-y-auto h-screen w-64 bg-white border-r border-neutral-100 dark:border-neutral-700/50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 dark:bg-slate-800">
+		<%- include('../components/sidebar-admin') %>
+	</aside>
+	<main class="flex flex-col h-screen w-full overflow-y-auto">
+		<%- include('../components/header-admin', { title: 'VKontakte' }) %>
+		<% if (totalQuote > 0 || hasUnlimited) { %>
+		<section class="p-4">
+			<%- include('../components/package-bar') %>
+			<div class="p-4 bg-white dark:bg-slate-800 rounded-md shadow-sm border border-neutral-100 dark:border-slate-700/50">
+				<h2 class="text-xl font-bold tracking-tight mb-4 text-black dark:text-white">
+					URL VKontakte Videos
+				</h2>
+				<form id="downloadForm" action="/dashboard/vk" method="POST">
+					<div class="w-full flex flex-col md:flex-row items-center gap-2 md:gap-0 text-sm md:text-base">
+						<div class="w-full max-w-lg">
+							<input 
+							  type="url" 
+							  id="url" 
+							  name="url" 
+							  placeholder="https://vk.com/..." 
+							  pattern="^(https?:\/\/)?(www\.)?vk\.com\/.+$"
+							  required 
+							  class="w-full bg-neutral-50 dark:bg-slate-700 px-3 py-3 focus:outline-none rounded md:rounded-l md:rounded-r-none border md:border-l md:border-t md:border-b md:border-r-0 border-neutral-200 dark:border-slate-600">
+						</div>
+						<div class="flex item-center w-full gap-2 md:gap-0">
+							<div class="w-full md:w-auto">
+								<select 
+								  name="type" 
+								  id="type" 
+								  required 
+								  class="w-full md:w-24 rounded md:rounded-none bg-neutral-50 dark:bg-slate-700 px-3 py-3.5 focus:outline-none border border-neutral-200 dark:border-slate-600">
+								  <option value="video">Video</option>
+								  <option value="audio">Audio</option>
+								</select>
+							</div>
+							<div>
+								<button 
+								  type="submit" 
+								  class="p-3 bg-blue-500 dark:bg-blue-600 border border-neutral-200 dark:border-slate-600 text-white font-semibold rounded md:rounded-r md:rounded-l-none">
+								  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 md:h-6 md:w-6" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15c0 2.828 0 4.243.879 5.121C4.757 21 6.172 21 9 21h6c2.828 0 4.243 0 5.121-.879C21 19.243 21 17.828 21 15M12 3v13m0 0l4-4.375M12 16l-4-4.375"/></svg>
+								</button>
+							</div>
+						</div>
+					</div>
+				</form>
+				
+				<div class="prose prose-sm md:prose-base dark:prose-invert max-w-none mt-12">
+					<h2 class="text-xl font-bold tracking-tight -mb-4">
+						Download History
+					</h2>
+					<div class="overflow-auto w-full">
+						<table>
+							<thead>
+								<tr>
+									<th>Title</th>
+									<th>Type</th>
+									<th>Duration</th>
+									<th class="text-center">Expired</th>
+									<th class="text-center">Action</th>
+								</tr>
+							</thead>
+							 <tbody id="downloads-list">
+								<% if (downloads.length === 0) { %>
+									<tr>
+										<td colspan="5" class="text-center text-gray-500 py-4">
+											Download history not found.
+										</td>
+									</tr>
+								<% } else { %>
+								<% downloads.forEach((d, index) => { %>
+									<tr <% if (d.expired_at) { %> data-expired="<%= new Date(d.expired_at).toISOString() %>"
+										<% } else { %>
+											data-expired="lifetime"
+										<% } %>
+									>
+										<td>
+											<div class="overflow-hidden line-clamp-1 text-lg">
+												<%= d.title %>
+											</div>
+										</td>
+										<td class="whitespace-nowrap">
+											<%= d.type.charAt(0).toUpperCase() + d.type.slice(1) %>
+										</td>
+										<td class="whitespace-nowrap">
+											<% 
+											  const totalSeconds = d.duration || 0;
+											  const hours = Math.floor(totalSeconds / 3600);
+											  const minutes = Math.floor((totalSeconds % 3600) / 60);
+											  const seconds = totalSeconds % 60;
+
+											  function pad(n) { return String(n).padStart(2, '0'); }
+											%>
+											<%= pad(hours) %>:<%= pad(minutes) %>:<%= pad(seconds) %>
+										</td>
+										<td class="countdown text-rose-500 font-semibold whitespace-nowrap text-center">
+											00:00:00
+										</td>
+										<td class="whitespace-nowrap">
+											<div class="flex items-center justify-center gap-2">
+												<a class="text-sky-500" href="<%= d.filepath %>" download>
+													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 15c0 2.828 0 4.243.879 5.121C4.757 21 6.172 21 9 21h6c2.828 0 4.243 0 5.121-.879C21 19.243 21 17.828 21 15M12 3v13m0 0l4-4.375M12 16l-4-4.375"/></svg>
+												</a>
+												<button class="text-emerald-500" onclick="window.open('<%= d.filepath %>', '_blank')">
+													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.275 15.296C2.425 14.192 2 13.639 2 12c0-1.64.425-2.191 1.275-3.296C4.972 6.5 7.818 4 12 4s7.028 2.5 8.725 4.704C21.575 9.81 22 10.361 22 12c0 1.64-.425 2.191-1.275 3.296C19.028 17.5 16.182 20 12 20s-7.028-2.5-8.725-4.704Z"/><path d="M15 12a3 3 0 1 1-6 0a3 3 0 0 1 6 0Z"/></g></svg>
+												</button>
+												<form action="/dashboard/vk/delete/<%= d.id %>" method="POST" class="-mb-1">
+													<button type="submit" class="text-rose-500">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M9.17 4a3.001 3.001 0 0 1 5.66 0m5.67 2h-17m15.333 2.5l-.46 6.9c-.177 2.654-.265 3.981-1.13 4.79s-2.196.81-4.856.81h-.774c-2.66 0-3.991 0-4.856-.81c-.865-.809-.954-2.136-1.13-4.79l-.46-6.9M9.5 11l.5 5m4.5-5l-.5 5"/></svg>
+													</button>
+												</form>
+											</div>
+										</td>
+									</tr>
+								<% }) %>
+								<% } %>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</section>
+		<% } else { %>
+			<%- include('../components/pricing-admin') %>
+		<% } %>
+
+	</main>
+	
+	<div id="loadingOverlay" class="hidden fixed inset-0 backdrop-blur-sm bg-black/60 flex items-center justify-center z-50">
+	  <div class="text-white text-lg flex flex-col items-center">
+		<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24"><path fill="currentColor" d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,20a9,9,0,1,1,9-9A9,9,0,0,1,12,21Z"/><rect width="2" height="7" x="11" y="6" fill="currentColor" rx="1"><animateTransform attributeName="transform" dur="9s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></rect><rect width="2" height="9" x="11" y="11" fill="currentColor" rx="1"><animateTransform attributeName="transform" dur="0.75s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></rect></svg>
+		<span class="mt-4 text-center">Please Wait!!</span>
+		<span class="text-sm text-center">Processing...</span>
+	  </div>
+	</div>
+	
+	<%- include('../components/error-modal') %>
+	<script src="/assets/js/dashboard.js"></script>
+	<script>
+	  const wsProtocol = location.protocol === 'https:' ? 'wss' : 'ws';
+	  const ws = new WebSocket(`${wsProtocol}://${location.host}`);
+
+	  ws.addEventListener('message', (event) => {
+		const msg = JSON.parse(event.data);
+		if(msg.type === 'downloads') {
+		  const downloads = msg.data;
+		  const table = document.getElementById('downloads-list');
+		  table.innerHTML = '';
+
+		  downloads.forEach(d => {
+			const tr = document.createElement('tr');
+			tr.innerHTML = `
+			  <td>${d.title}</td>
+			  <td>${d.type}</td>
+			  <td><a href="${d.filepath}" target="_blank">Download</a></td>
+			  <td>${new Date(d.created_at).toLocaleString()}</td>
+			`;
+			table.appendChild(tr);
+		  });
+		}
+	  });
+	</script>
+	<script>
+	  function pad(n) { 
+		return String(n).padStart(2, '0'); 
+	  }
+
+	  function updateCountdowns() {
+		const rows = document.querySelectorAll('#downloads-list tr');
+		const now = Date.now();
+
+		rows.forEach(row => {
+		  const countdownEl = row.querySelector('.countdown');
+		  const expiredData = row.dataset.expired;
+
+		  if (expiredData === 'lifetime') {
+			countdownEl.innerHTML = `
+			  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mx-auto text-emerald-500">
+				<path fill="currentColor" fill-rule="evenodd" d="M7 7.75a4.25 4.25 0 0 0 0 8.5c.597 0 1.045-.107 1.407-.284c.362-.176.679-.442.986-.816c.54-.66.983-1.558 1.567-2.741q.175-.355.37-.744l.34-.69c.581-1.181 1.117-2.27 1.777-3.075c.41-.501.89-.923 1.49-1.215S16.216 6.25 17 6.25a5.75 5.75 0 1 1-3.45 10.35a.75.75 0 0 1 .9-1.2A4.25 4.25 0 1 0 17 7.75c-.597 0-1.045.107-1.407.284c-.362.176-.679.442-.986.816c-.54.66-.983 1.558-1.567 2.741q-.175.355-.37.744l-.34.69c-.581 1.181-1.117 2.27-1.777 3.076c-.41.5-.89.922-1.49 1.214s-1.28.435-2.063.435A5.75 5.75 0 1 1 10.451 7.4a.75.75 0 1 1-.901 1.2A4.23 4.23 0 0 0 7 7.75" clip-rule="evenodd"></path>
+			  </svg>
+			`;
+			return;
+		  }
+
+		  const expiredTime = new Date(expiredData).getTime();
+		  let diff = Math.max(0, expiredTime - now);
+
+		  const totalSeconds = Math.floor(diff / 1000);
+		  const hours = Math.floor(totalSeconds / 3600);
+		  const minutes = Math.floor((totalSeconds % 3600) / 60);
+		  const seconds = totalSeconds % 60;
+
+		  const formatted = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+		  countdownEl.textContent = formatted;
+
+		  countdownEl.classList.remove('text-emerald-500');
+		  countdownEl.classList.add('text-rose-500');
+		});
+	  }
+
+	  updateCountdowns();
+	  setInterval(updateCountdowns, 1000);
+	</script>
+    <script>
+      const form = document.getElementById('downloadForm');
+      const overlay = document.getElementById('loadingOverlay');
+
+      form.addEventListener('submit', () => {
+        overlay.classList.remove('hidden');
+      });
+   </script>
+
+</body>
+</html>

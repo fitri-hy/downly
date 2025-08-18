@@ -1,0 +1,17 @@
+<header class="flex items-center justify-between gap-4 bg-white dark:bg-slate-800 p-4 shadow-sm">
+	<div class="flex items-center gap-2">
+		<button onclick="toggleSidebar()" class="flex md:hidden">
+			<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M20.75 7a.75.75 0 0 1-.75.75H4a.75.75 0 0 1 0-1.5h16a.75.75 0 0 1 .75.75m0 5a.75.75 0 0 1-.75.75H4a.75.75 0 0 1 0-1.5h16a.75.75 0 0 1 .75.75m0 5a.75.75 0 0 1-.75.75H4a.75.75 0 0 1 0-1.5h16a.75.75 0 0 1 .75.75" clip-rule="evenodd"/></svg>
+		</button>
+		<h1 class="text-xl font-bold tracking-tight text-black dark:text-white">
+			<%= title %>
+		</h1>
+	</div>
+	<div class="flex items-center gap-2">
+		<%- include('../components/dark-button') %>
+		<a href="/logout" class="text-rose-500 dark:text-white flex items-center gap-1 md:px-3 md:py-1 p-1 rounded-md md:rounded-full bg-rose-50 dark:bg-rose-900 hover:scale-105 hover:duration-300 hover:transition-all hover:shadow-sm">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3.25a.75.75 0 0 1 0 1.5a7.25 7.25 0 0 0 0 14.5a.75.75 0 0 1 0 1.5a8.75 8.75 0 1 1 0-17.5"/><path fill="currentColor" d="M16.47 9.53a.75.75 0 0 1 1.06-1.06l3 3a.75.75 0 0 1 0 1.06l-3 3a.75.75 0 1 1-1.06-1.06l1.72-1.72H10a.75.75 0 0 1 0-1.5h8.19z"/></svg>
+			<span class="hidden md:flex font-semibold">Logout</span>
+		</a>
+	</div>
+</header>

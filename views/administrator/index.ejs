@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Administrator</title>
+  <%- include('../partials/head') %>
+</head>
+<body class="flex w-full min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-sky-50/50 text-neutral-700 dark:text-neutral-100 dark:from-neutral-900 dark:via-gray-900 dark:to-slate-900">
+	<aside id="sidebar" class="flex-none fixed md:static top-0 left-0 overflow-y-auto h-screen w-64 bg-white border-r border-neutral-100 dark:border-neutral-700/50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 z-50 dark:bg-slate-800">
+		<%- include('../components/sidebar-administrator') %>
+	</aside>
+	<main class="flex flex-col h-screen w-full overflow-y-auto">
+		<%- include('../components/header-admin', { title: 'Administrator' }) %>
+		<section class="p-4">
+			<div class="p-4 bg-white dark:bg-slate-800 rounded-md shadow-sm">
+				<%
+				  const now = new Date();
+				  const hour = now.getHours();
+				  let greeting = 'Welcome';
+
+				  if (hour >= 4 && hour < 11) {
+					greeting = 'Good Morning ☀️';
+				  } else if (hour >= 11 && hour < 15) {
+					greeting = 'Good Afternoon 🌤️';
+				  } else if (hour >= 15 && hour < 18) {
+					greeting = 'Good Evening 🌇';
+				  } else {
+					greeting = '.Good Night 🌙';
+				  }
+				%>
+				<div class="mb-6 flex flex-col">
+					<span class="font-bold text-2xl md:text-3xl text-black dark:text-white text-center md:text-left"><%= greeting %>, <strong class="text-sky-500"><%= user.name %></strong>.</span>
+					<span class="text-lg text-center md:text-left">We hope you have a productive day</span>
+				</div>
+				<div>
+					  <% 
+						const platformData = [
+						  { name: 'YouTube', bg: 'bg-sky-500 dark:bg-sky-600' },
+						  { name: 'Facebook', bg: 'bg-blue-500 dark:bg-blue-600' },
+						  { name: 'Instagram', bg: 'bg-violet-500 dark:bg-violet-600' },
+						  { name: 'Twitter/X', bg: 'bg-pink-500 dark:bg-pink-600' },
+						  { name: 'TikTok', bg: 'bg-purple-500 dark:bg-purple-600' },
+						  { name: 'Vimeo', bg: 'bg-indigo-500 dark:bg-indigo-600' },
+						  { name: 'VK', bg: 'bg-orange-500 dark:bg-orange-600' },
+						  { name: 'Dailymotion', bg: 'bg-teal-500 dark:bg-teal-600' },
+						  { name: 'SoundCloud', bg: 'bg-emerald-500 dark:bg-emerald-600' }
+						];
+					  %>
+
+					<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+					  <% platformData.forEach(platform => { %>
+						<div class="hover:scale-105 hover:duration-300 hover:transition-all hover:shadow-lg relative flex flex-col items-center justify-center p-4 rounded-md <%= platform.bg %> text-white">
+						  <svg class="absolute top-2 left-2" xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24">
+							<path fill="currentColor" fill-rule="evenodd" d="M1.25 7A.75.75 0 0 1 2 6.25h8a.75.75 0 0 1 0 1.5H2A.75.75 0 0 1 1.25 7m0 5a.75.75 0 0 1 .75-.75h6a.75.75 0 0 1 0 1.5H2a.75.75 0 0 1-.75-.75m0 5a.75.75 0 0 1 .75-.75h8a.75.75 0 0 1 0 1.5H2a.75.75 0 0 1-.75-.75M17 17a5 5 0 1 0 0-10a5 5 0 0 0 0 10m.75-7a.75.75 0 0 0-1.5 0v1.846c0 .18.065.355.183.491l1 1.154a.75.75 0 0 0 1.134-.982l-.817-.943z" clip-rule="evenodd"/>
+						  </svg>
+						  <h2 class="text-xl md:text-3xl font-extrabold mt-4">
+							<%= totals[platform.name] || 0 %>
+						  </h2>
+						  <span class="text-center font-semibold"><%= platform.name %></span>
+						</div>
+					  <% }); %>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+	
+	<%- include('../components/error-modal') %>
+	<script src="/assets/js/dashboard.js"></script>
+</body>
+</html>

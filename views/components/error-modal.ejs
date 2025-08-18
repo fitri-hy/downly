@@ -1,0 +1,33 @@
+<% if (error.length > 0) { %>
+  <div id="flash-message-error" class="flash-message fixed bottom-4 right-4 bg-rose-500 text-white rounded-md p-2 shadow-lg transition-opacity duration-500">
+    <%= error %>
+  </div>
+<% } %>
+
+<% if (success.length > 0) { %>
+  <div id="flash-message-success" class="flash-message fixed bottom-4 right-4 bg-emerald-500 text-white rounded-md p-2 shadow-lg transition-opacity duration-500">
+    <%= success %>
+  </div>
+<% } %>
+
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const fadeOut = (el) => {
+      el.style.opacity = 1;
+      setTimeout(() => {
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        el.style.opacity = 0;
+        el.style.transform = 'translateY(20px)';
+        setTimeout(() => { 
+          el.remove(); 
+        }, 500);
+      }, 3000);
+    };
+
+    const errorMsg = document.getElementById('flash-message-error');
+    const successMsg = document.getElementById('flash-message-success');
+
+    if (errorMsg) fadeOut(errorMsg);
+    if (successMsg) fadeOut(successMsg);
+  });
+</script>
