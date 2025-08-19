@@ -16,6 +16,7 @@ module.exports = (YtdlService) => ({
       const htmlContent = marked.parse(markdown);
 
       res.render('dashboard/rest-api', {
+		user: req.session.user,
         docs: htmlContent,
 		user_token: req.session.user.token
       });
