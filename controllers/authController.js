@@ -36,7 +36,7 @@ exports.login = async (req, res) => {
       return res.redirect('/login');
     }
 	
-	if (user.status !== 'Active') {
+	if (user.status !== 'active') {
       req.flash('error', 'Your account is inactive. Please contact admin.');
       return res.redirect('/login');
     }
@@ -115,7 +115,7 @@ exports.register = async (req, res) => {
     }
 
     const role = 'user';
-    const status = 'Active';
+    const status = 'active';
     const hashedPassword = await bcrypt.hash(password, 10);
     const token = crypto.randomBytes(32).toString('hex');
 
@@ -191,7 +191,7 @@ exports.googleLogin = async (req, res) => {
 
       const token = crypto.randomBytes(32).toString('hex');
       const role = 'user';
-      const status = 'Active';
+      const status = 'active';
 
       const [result] = await Connection.query(
         'INSERT INTO users (name, email, password, role, token, status, google_uid, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())',
