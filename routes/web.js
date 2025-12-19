@@ -92,6 +92,7 @@ module.exports = (YtdlService, YtdlGuestService ) => {
   // Guest Download
   const GuestDownload = require('../controllers/dashboard/guestDownloadController')(YtdlGuestService);
   router.post('/downloads', GuestDownload.download);
+  router.post('/downloads/delete/:id', GuestDownload.deleteDownload);
   
   // Administrator
   const Administrator = require('../controllers/dashboard/administratorController');
