@@ -15,3 +15,6 @@ Downly is a fast and easy platform to download videos or audio from various popu
 * VK
 * Dailymotion
 * SoundCloud
+
+email:     superadmin@gmail.com
+password:  superadmin
